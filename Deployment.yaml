@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: car-web-dep
+  labels:
+    app: car-web-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: car-web-app
+  template:
+    metadata:
+      labels:
+        app: car-web-app
+    spec:
+      containers:
+      - name: car-web-app
+        image: 192.168.2.10:5000/car-web-img
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: car-web-svc
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: car-web-app
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: car-web-ing
+spec:
+  tls:
+  - hosts:
+    - car.naufal.net # Replace with your cluster DNS name
+    secretName: self-signed-tls
+  rules:
+  - host: car.naufal.net # Replace with your cluster DNS name
+    http:
+      paths:
+      - backend:
+          service:
+            name: car-web-svc
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
