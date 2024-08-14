@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: car-web-app
-        image: 192.168.2.10:5000/car-web-img
+        image: uzernova/car-web-img
         ports:
         - containerPort: 80
 ---
